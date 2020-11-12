@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_11_12_024930) do
+ActiveRecord::Schema.define(version: 2020_11_12_034414) do
 
   create_table "locations", force: :cascade do |t|
     t.string "city"
@@ -20,10 +20,10 @@ ActiveRecord::Schema.define(version: 2020_11_12_024930) do
 
   create_table "notes", force: :cascade do |t|
     t.string "content"
-    t.integer "trails_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["trails_id"], name: "index_notes_on_trails_id"
+    t.integer "trail_id", null: false
+    t.index ["trail_id"], name: "index_notes_on_trail_id"
   end
 
   create_table "trails", force: :cascade do |t|
@@ -37,6 +37,6 @@ ActiveRecord::Schema.define(version: 2020_11_12_024930) do
     t.index ["location_id"], name: "index_trails_on_location_id"
   end
 
-  add_foreign_key "notes", "trails", column: "trails_id"
+  add_foreign_key "notes", "trails"
   add_foreign_key "trails", "locations"
 end
