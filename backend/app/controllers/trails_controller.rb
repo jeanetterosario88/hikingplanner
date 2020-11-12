@@ -5,10 +5,10 @@ class TrailsController < ApplicationController
         render json: TrailSerializer.new(trails).to_serialized_json
       end
      
-      def show
+    def show
         trail = Trail.find_by(id: params[:id])
         render json: TrailSerializer.new(trail).to_serialized_json
-      end
+    end
 
     def create
         trail = Trail.new
@@ -16,8 +16,9 @@ class TrailsController < ApplicationController
         if trail.save
         render json: TrailSerializer.new(trail).to_serialized_json
         else
-        render json: {message: trail.errors.messages[:team_max][0]}
+        render json: {message: trail.errors.messages[:trail_max][0]}
       end
+    end
     
       def destroy
         trail = Trail.find(params[:id])
