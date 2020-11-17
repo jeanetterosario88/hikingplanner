@@ -34,7 +34,7 @@ ActiveRecord::Schema.define(version: 2020_11_12_205856) do
     t.integer "location_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.integer "likes"
+    t.integer "likes", default: 0
     t.index ["location_id"], name: "index_trails_on_location_id"
   end
 

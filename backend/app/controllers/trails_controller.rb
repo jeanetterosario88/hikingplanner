@@ -1,9 +1,9 @@
 class TrailsController < ApplicationController
 
     def index
-        trails = Trail.all
-        render json: TrailSerializer.new(trails)
-      end
+      trails = Trail.all
+      render json: TrailSerializer.new(trails)
+    end
      
     def show
         trail = Trail.find_by(id: params[:id])
@@ -14,18 +14,25 @@ class TrailsController < ApplicationController
     end
 
     def create
-        trail = Trail.new
-        trail.location = Location.find(params["location_id"])
-        if trail.save
+      trail = Trail.new(trail_params)
+      trail.likes = 0
+      if trail.save
         render json: TrailSerializer.new(trail)
-        else
+      else
         render json: {message: trail.errors.messages}
       end
     end
     
-      def destroy
-        trail = Trail.find(params[:id])
-        trail.destroy
-        render json: TrailSerializer.new(trail)
+    def destroy
+      trail = Trail.find(params[:id])
+      trail.destroy
+      render json: TrailSerializer.new(trail)
+    end
+
+    private
+
+    def trail_params
+      params.require(:trail).permit(:name, :difficulty, :description, :image, :location_id)
+    end
 
 end

@@ -4,7 +4,6 @@ class NotesController < ApplicationController
         note = Note.new
         note.trail = Trail.find(params["trail_id"])
     end
-
     
 
 end
