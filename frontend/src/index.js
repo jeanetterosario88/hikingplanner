@@ -3,6 +3,7 @@ const LOCATIONS_URL = `${BASE_URL}/locations`
 const TRAILS_URL = `${BASE_URL}/trails`
 
 const modalContent = document.getElementById("modalContent")
+let locationData = []
 
 // class City {
 //     constructor(city, trails){
@@ -26,10 +27,16 @@ document.addEventListener("DOMContentLoaded", function(event) {
     .then(res => {
        res.forEach(location => {
            displayCity(location)
-           document.getElementById(location.id).addEventListener("click", function(event) {
-                addModalContent(location) // acts content to DOM, but not visible
-                document.getElementById("modal").style.display = "block" //now visible
-           })
+           // locationData.push(location)
+           document.getElementById(location.id).addEventListener("click", function() {
+               fetch(`${LOCATIONS_URL}/${location.id}`)
+               .then(res => res.json())
+               .then(res => {
+                    addModalContent(res)
+               })
+           
+            document.getElementById("modal").style.display = "block" //now visible
+       })
        })
     })
 })
@@ -74,35 +81,45 @@ function displayCity(location) {
 function addModalContent(location) {
     let addtrailbutton = document.getElementById("newtrail")
     addtrailbutton.addEventListener("click", displaytrailform)
-    location.trails.forEach(trail => displayTrailCard(trail))
-
+    // sort by likes
+    const sortedTrails = location.included.sort((a,b) => b.attributes.likes - a.attributes.likes)
+    sortedTrails.forEach(trail => displayTrailCard(trail.attributes))
     function displayTrailCard(trail, cardFromForm=false) {
+        console.log(trail, "TESTINGG")
         let traildiv = document.createElement("div")
         traildiv.className = "trailcard"
         let trailtitle = document.createElement("h4")
         let trailsummary = document.createElement("p")
+        trailsummary.id = "fulldescription"
+        let trailsummaryshort = document.createElement("p")
+        trailsummaryshort.id = "shortdescription"
         let traildifficulty = document.createElement("p")
         let traillikes = document.createElement("p")
         let trailcards = document.getElementById("trailcards")
+        let addlikes = document.createElement("span")
+        addlikes.id = "addlikes"
         let readmore = document.createElement("span")
-        readmore.id = "readmoreid"
-        let summarytext;
-            if (trail.description.length > 25) {
-                summarytext = trail.description.slice(0, 25) 
-            } else {
-                summarytext = trail.description
-            }
+        readmore.className = "readread"
+        let readless = document.createElement("span")
+        readmore.className = "readread"
+
         trailtitle.innerHTML = trail.name
         traildifficulty.innerHTML = `Difficulty: ${trail.difficulty}`
         traillikes.innerHTML = "Likes: " + trail.likes
-        readmore.innerHTML = trail.description.length > 25 ? " ...Read More" : ""
-        trailsummary.innerHTML = `Description: ${summarytext}`
-        trailsummary.appendChild(readmore)
+        addlikes.innerHTML = "&#x1f44d;"
+        readmore.innerHTML = "...Read More"
+        readless.innerHTML = "...Read Less"
+        trailsummary.innerHTML = `Description: ${trail.description}`
+        trailsummaryshort.innerHTML = `Description: ${trail.description.slice(0, 25)}`
+       // trailsummary.appendChild(readless)
+        trailsummaryshort.appendChild(readmore)
 
         traildiv.appendChild(trailtitle)
         traildiv.appendChild(traildifficulty)
         traildiv.appendChild(traillikes)
         traildiv.appendChild(trailsummary)
+        traildiv.appendChild(trailsummaryshort)
+        traildiv.appendChild(addlikes)
         
         if (cardFromForm) {
             trailcards.prepend(traildiv)
@@ -111,23 +128,55 @@ function addModalContent(location) {
             trailcards.appendChild(traildiv)
         }
         
-
-        document.getElementById("readmoreid").addEventListener("click", function(event){
-            readmore.innerHTML = " ...Read More";
-            trailsummary.innerHTML = `Description: ${trail.description}`
-            readmore.innerHTML = " ...Read Less"
-            trailsummary.appendChild(readmore)
-            readmore.id = "readlessid"
-            document.getElementById("readlessid").addEventListener("click", function(event){
-                trailsummary.innerHTML = `Description: ${summarytext}`
-                readmore.innerHTML = trail.description.length > 25 ? " ...Read More" : "";
-                trailsummary.appendChild(readmore)
-                readmore.id = "readmoreid"
-                console.log(readmore.id)
-            })
+        let readmoreclicked = false
+        document.querySelectorAll(".readread").forEach(element => {
+            element.addEventListener("click", function(event){
+                            if (readmoreclicked === false){
+                                trailsummaryshort.style.display = "none"
+                                trailsummary.style.display = "inline"
+                                readmoreclicked = true
+                            } else{
+                                trailsummaryshort.style.display = "inline"
+                                trailsummary.style.display = "none"
+                                readmoreclicked = false
+                            }
+                        })
         })
 
+       
+
+
+        //     readmore.innerHTML = " ...Read More";
+        //     trailsummary.innerHTML = `Description: ${trail.description}`
+        //     readmore.innerHTML = " ...Read Less"
+        //     trailsummary.appendChild(readmore)
+        //     readmore.id = "readlessid"
+        //     document.getElementById("readlessid").addEventListener("click", function(event){
+        //         trailsummary.innerHTML = `Description: ${summarytext}`
+        //         readmore.innerHTML = trail.description.length > 25 ? " ...Read More" : "";
+        //         trailsummary.appendChild(readmore)
+        //         readmore.id = "readmoreid"
+        //         console.log(readmore.id)
+        //     })
+
+        addlikes.addEventListener("click", function(event){
+            console.log(trail.id, "Trail ID on Add Likes Event Listen")
+            fetch(`${TRAILS_URL}/${trail.id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+            })
+            .then(res => res.json())
+            .then(res => {
+                console.log(res)
+            })
+        })
+        
     }
+
+ 
 
     function displaytrailform(){
         let trailForm = document.getElementById("newTrail");
@@ -136,7 +185,7 @@ function addModalContent(location) {
         //Step 2: Show the form
         trailForm.classList.remove("hidden");
         //Step 3: Fill in hidden field of "location_id"
-        document.getElementById("trail-location-id").value = location.id
+        document.getElementById("trail-location-id").value = location.data.id
         //Step 4: Change/update heading for form
         document.getElementById("trail-location-name").textContent = location.city;
         //Step 5: Add an eventListener to the new Trail form sumbit that will handle the submit (in its own function)
@@ -145,12 +194,14 @@ function addModalContent(location) {
 
     function submitNewTrail(event) {
         event.preventDefault();
+
+        const location_id = event.target.location_id.value
         const formData = {
             name: event.target.name.value,
             difficulty: event.target.difficulty.value,
             description: event.target.description.value,
             image: event.target.image.value,
-            location_id: event.target.location_id.value
+            location_id: location_id
         }
         //fetch of the form data into (post) our DB
         fetch(TRAILS_URL, {
@@ -169,9 +220,7 @@ function addModalContent(location) {
             displayTrailCard(res.data.attributes, cardFromForm=true);
 
             //and make the new trail card styled (blue background) with a specific class
-            //show the previous trails
-
-            
+            //show the previous trails  
         
         })
     }

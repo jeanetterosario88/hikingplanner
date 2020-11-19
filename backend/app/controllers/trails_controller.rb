@@ -22,7 +22,18 @@ class TrailsController < ApplicationController
         render json: {message: trail.errors.messages}
       end
     end
+
+    def update
+      trail = Trail.find(params[:id])
+      options = {
+          include: [:likes]
+       }
+      upvoted_likes = trail.likes + 1
+      trail.update(likes: upvoted_likes)
+      render json: TrailSerializer.new(trail)
+    end
     
+
     def destroy
       trail = Trail.find(params[:id])
       trail.destroy
