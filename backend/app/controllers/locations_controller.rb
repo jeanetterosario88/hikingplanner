@@ -15,8 +15,11 @@ class LocationsController < ApplicationController
 
     def create
         location = Location.new(location_params)
+        location.city = location.city.capitalize
         if location.save
             render json: LocationSerializer.new(location)
+        else
+            render json: {errors: location.errors.full_messages}
         end
     end
     

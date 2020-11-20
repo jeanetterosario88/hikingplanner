@@ -36,10 +36,14 @@
     padding: 2rem;
 }
 
+#city-errors, #trail-errors {
+    color: red;
+    font-size: 1rem;
+}
 
 
 .hidden{
-    display: none;
+    display: none !important;
 }
 #newTrail input,
 #newTrail textarea {

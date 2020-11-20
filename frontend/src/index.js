@@ -39,6 +39,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
        })
        })
     })
+    .then(() => sortCities())
 })
 
 let close = document.getElementById("closeModal")
@@ -63,29 +64,44 @@ cityform.addEventListener("submit", function(event){
     })
     .then(res => res.json())
     .then(res => {
+        if (res.errors){
+            let errordiv = document.getElementById("city-errors")
+            errordiv.classList.remove("hidden")
+            errordiv.innerHTML = res.errors[0]
+        }
+        else {
         console.log(res);
         let cityTitle = document.createElement("h3");
         cityTitle.id = res.data.id;
         cityTitle.textContent = res.data.attributes.city;
+        cityTitle.className = "city";
         document.getElementById("locationsContainer").appendChild(cityTitle);
+        cityform.city.value = ""
+        }
     })
+    .then(()=> sortCities())
 })
 
 function displayCity(location) {
     let cityTitle = document.createElement("h3");
     cityTitle.id = location.id
     cityTitle.textContent = location.city
+    cityTitle.className = "city"
     document.getElementById("locationsContainer").appendChild(cityTitle)
 }
 
 function addModalContent(location) {
     let addtrailbutton = document.getElementById("newtrail")
     addtrailbutton.addEventListener("click", displaytrailform)
-    // sort by likes
-    const sortedTrails = location.included.sort((a,b) => b.attributes.likes - a.attributes.likes)
-    sortedTrails.forEach(trail => displayTrailCard(trail.attributes))
+
+    function sortTrails(){
+        // sort by likes
+        const sortedTrails = location.included.sort((a,b) => b.attributes.likes - a.attributes.likes)
+        sortedTrails.forEach(trail => displayTrailCard(trail.attributes))
+    }
+    sortTrails();
+
     function displayTrailCard(trail, cardFromForm=false) {
-        console.log(trail, "TESTINGG")
         let traildiv = document.createElement("div")
         traildiv.className = "trailcard"
         let trailtitle = document.createElement("h4")
@@ -95,6 +111,7 @@ function addModalContent(location) {
         trailsummaryshort.id = "shortdescription"
         let traildifficulty = document.createElement("p")
         let traillikes = document.createElement("p")
+        traillikes.id = `traillikes-${trail.id}`
         let trailcards = document.getElementById("trailcards")
         let addlikes = document.createElement("span")
         addlikes.id = "addlikes"
@@ -159,8 +176,8 @@ function addModalContent(location) {
         //         console.log(readmore.id)
         //     })
 
-        addlikes.addEventListener("click", function(event){
-            console.log(trail.id, "Trail ID on Add Likes Event Listen")
+
+        function handleAddLike(event){
             fetch(`${TRAILS_URL}/${trail.id}`, {
                 method: "PUT",
                 headers: {
@@ -170,9 +187,14 @@ function addModalContent(location) {
             })
             .then(res => res.json())
             .then(res => {
-                console.log(res)
+                    event.target.innerHTML = "+1"
+                    document.getElementById(`traillikes-${trail.id}`).innerHTML = `Likes: ${res.data.attributes.likes}`
+                    //sortTrails();
+                    addlikes.removeEventListener("click", handleAddLike)
             })
-        })
+       }
+
+        addlikes.addEventListener("click", handleAddLike)
         
     }
 
@@ -214,15 +236,24 @@ function addModalContent(location) {
         })
         .then(res => res.json())
         .then(res => {
-            //hide the form
-            resetModal();
-            //then we append the new trail on the modal as a trail card as the first card (top of the list)
-            displayTrailCard(res.data.attributes, cardFromForm=true);
-
-            //and make the new trail card styled (blue background) with a specific class
-            //show the previous trails  
-        
-        })
+                if (res.errors){
+                    let errordiv = document.getElementById("trail-errors")
+                    errordiv.classList.remove("hidden")
+                    res.errors.forEach(error => {
+                        let errorline = document.createElement("p")
+                        errorline.innerHTML = error
+                        errordiv.appendChild(errorline)
+                    })
+                }
+                else {
+                //hide the form
+                resetModal();
+                //then we append the new trail on the modal as a trail card as the first card (top of the list)
+                displayTrailCard(res.data.attributes, cardFromForm=true);
+                //and make the new trail card styled (blue background) with a specific class
+                //show the previous trails  
+                }
+            })
     }
 
 }
@@ -236,3 +267,26 @@ function resetModal() {
     newtrail.image.value = "";
     newtrail.location_id.value = "";    
 }
+
+function sortCities() {
+    const cityList = getCityList();
+    const sortedCityList = cityList.sort((a,b) => {
+        if (a.textContent > b.textContent) {
+            return 1
+        } else {
+            return -1
+        }
+    })
+    cityList.forEach(city => city.remove());
+    sortedCityList.forEach(city => document.getElementById('locationsContainer').appendChild(city))
+}
+
+function getCityList() {
+    return Array.from(document.querySelectorAll('.city'));
+}
+
+// Desired feature: Search for a city:
+// function searchCityList(searchTerm) {
+//     const cityList = getCityList();
+//     cityList.filter()
+// }

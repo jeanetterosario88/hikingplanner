@@ -11,7 +11,8 @@
     <h2>Cities</h2>
     <form action="Post" id="cityForm">
         <h3>Don't See A City? Add One Here:</h3>
-        <input type="text" name="city" id="city" placeholder = "Example: Memphis, Tennessee" />
+        <div id="city-errors" class="hidden"></div>
+        <input type="text" name="city" id="city" placeholder = "Example: Memphis, Tennessee" required/>
         <button type="submit">Submit</button>
     </form>
     <div id="locationsContainer">
@@ -28,9 +29,10 @@
             </div>
             <form action="post" id="newTrail" class="hidden">
                 <h3>Add a trail for <span id="trail-location-name"></span></h3>    
-                <input type="text" name="name" placeholder="Trail name">
-                <input type="text" name="difficulty" placeholder="Trail Difficulty Level">
-                <textarea name="description" id="" cols="30" rows="10" placeholder="Description"></textarea>
+                <div id="trail-errors" class="hidden"></div>
+                <input type="text" name="name" placeholder="Trail name" required>
+                <input type="text" name="difficulty" placeholder="Trail Difficulty Level" required>
+                <textarea name="description" id="" cols="30" rows="10" placeholder="Description" required></textarea>
                 <input type="text" name="image" placeholder="image url">
                 <input type="hidden" name="location_id" id="trail-location-id">
                 <button type="submit">Add New Trail</button>

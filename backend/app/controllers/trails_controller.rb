@@ -19,7 +19,7 @@ class TrailsController < ApplicationController
       if trail.save
         render json: TrailSerializer.new(trail)
       else
-        render json: {message: trail.errors.messages}
+        render json: {errors: trail.errors.full_messages}
       end
     end
 
