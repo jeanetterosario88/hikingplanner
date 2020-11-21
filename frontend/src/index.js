@@ -2,6 +2,9 @@ const BASE_URL = "http://localhost:3000"
 const LOCATIONS_URL = `${BASE_URL}/locations`
 const TRAILS_URL = `${BASE_URL}/trails`
 
+
+
+
 const modalContent = document.getElementById("modalContent")
 let locationData = []
 
@@ -27,6 +30,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     .then(res => {
        res.forEach(location => {
            displayCity(location)
+        
            // locationData.push(location)
            document.getElementById(location.id).addEventListener("click", function() {
                fetch(`${LOCATIONS_URL}/${location.id}`)
@@ -189,7 +193,7 @@ function addModalContent(location) {
             .then(res => {
                     event.target.innerHTML = "+1"
                     document.getElementById(`traillikes-${trail.id}`).innerHTML = `Likes: ${res.data.attributes.likes}`
-                    //sortTrails();
+                    //`sortTrails();
                     addlikes.removeEventListener("click", handleAddLike)
             })
        }
@@ -209,7 +213,7 @@ function addModalContent(location) {
         //Step 3: Fill in hidden field of "location_id"
         document.getElementById("trail-location-id").value = location.data.id
         //Step 4: Change/update heading for form
-        document.getElementById("trail-location-name").textContent = location.city;
+        document.getElementById("trail-location-name").textContent = location.data.attributes.city;
         //Step 5: Add an eventListener to the new Trail form sumbit that will handle the submit (in its own function)
         trailForm.addEventListener("submit", submitNewTrail)
     }

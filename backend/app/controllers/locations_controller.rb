@@ -15,7 +15,7 @@ class LocationsController < ApplicationController
 
     def create
         location = Location.new(location_params)
-        location.city = location.city.capitalize
+        location.city = location.city.split(" ").map{|word| word.capitalize}.join(" ")
         if location.save
             render json: LocationSerializer.new(location)
         else
