@@ -7,20 +7,20 @@
     <title>Document</title>
 </head>
 <body>
-   <h2>Cities</h2>
-    <form action="Post" id="cityForm">
-        <h4>Don't See A City? Add One Here:</h4>
+    <h2>Cities</h2>
+    <form>
+        <h3>Don't See A City? Add One Here:</h3>
         <div id="city-errors" class="hidden"></div>
         <input type="text" name="city" id="city" placeholder = "Example: Memphis, Tennessee" required/>
-        <button type="submit">Submit</button>
+        <button type="button" id="cityForm">Submit</button>
     </form>
     <div id="locationsContainer">
-    <h4>Click On a City Below to View Trails:</h4
+    
     </div>
     <div id="modal">
         <div id="modalContent">
             <span id="closeModal">&times;</span>
-            <button id="newtrail">
+            <button id="newTrailBtn">
                 Add Trail Here
             </button>
             <div id="trailcards">
@@ -29,16 +29,22 @@
             <form action="post" id="newTrail" class="hidden">
                 <h3>Add a trail for <span id="trail-location-name"></span></h3>    
                 <div id="trail-errors" class="hidden"></div>
-                <input type="text" name="name" placeholder="Trail Name" required>
-                <input type="text" name="difficulty" placeholder="Trail Difficulty Level" required>
+                <input type="text" name="name" placeholder="Trail name" required>
+                <div id="radioButtons">
+                    <input type="radio" name="difficulty" id="Easy" value="Easy"><label for="Easy">Easy</label>
+                    <input type="radio" name="difficulty" id="Moderate" value="Moderate"><label for="Moderate">Moderate</label>
+                    <input type="radio" name="difficulty" id="Difficult" value="Difficult"><label for="Difficult">Difficult</label>
+                </div>
                 <textarea name="description" id="" cols="30" rows="10" placeholder="Description" required></textarea>
                 <input type="text" name="image" placeholder="image url (optional)">
-                <input type="hidden" name="location_id" id="trail-location-id"> 
-                <button type="submit">Submit</button>
+                <input type="hidden" name="location_id" id="trail-location-id">
+                <button type="submit">Add New Trail</button>
             </form>
         </div>
     </div>
     <script src="./index.js"></script>
-
+    <script src="./location.js"></script>
+    <script src="./trailmodal.js"></script>
+    
 </body>
 </html>

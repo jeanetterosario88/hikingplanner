@@ -8,6 +8,7 @@ class Location{
     }
 
     fetchLocations(){
+        this.locationData = []
         fetch(LOCATIONS_URL) 
             .then(res => res.json())
             .then(res => {
@@ -20,8 +21,6 @@ class Location{
     }
 
     addLocation(newlocation){
-        console.log(newlocation)
-        setTimeout(()=> {
             fetch(LOCATIONS_URL, {
             method: "POST",
             headers: {
@@ -31,10 +30,19 @@ class Location{
             body: JSON.stringify(newlocation)
         })
         .then(res => res.json())
-        .then(res => console.log(res, "Add Location Response"))
-        .catch(error => console.log(error))
-        },3000)
+        .then(res => {
+            if (res.errors){
+                let errordiv = document.getElementById("city-errors")
+                errordiv.classList.remove("hidden")
+                errordiv.innerHTML = res.errors[0]
+                }
+            else {
+                this.fetchLocations()
+                console.log("New City Added")
+            }
+         })
     }
+
 
     renderLocation(location){
         return `<h3 id="${location.id}" class="city">${location.city}</h3>`
@@ -42,18 +50,28 @@ class Location{
 
     renderListofLocations(){
         document.getElementById(`locationsContainer`).innerHTML = ""
-        this.locationData.forEach(location => {
-            console.log(location, "renderlistforeach")
+        let sorted = newLocale.sortCities() // sort the cities before rendering to page
+        sorted.forEach(location => {
             document.getElementById(`locationsContainer`).innerHTML += this.renderLocation(location);
         })
-
     }
 
-    submitNewLocation(){
-        console.log(document.getElementById('city').value)
+    sortCities() {
+        const cityList = newLocale.locationData; // this.LocationData not working, using newLocale.LocationData, newLocale is the Location Class that was initialized, not a specific city
+        const sortedCityList = cityList.sort((a,b) => {
+            if (a.city > b.city) { // by city name
+                return 1
+            } else {
+                return -1
+            }
+        })
+        return sortedCityList
+    }
+
+    submitNewLocation(event){
+        event.preventDefault()
         let newlocation = {city: document.getElementById('city').value}
         newLocale.addLocation(newlocation)
-        newLocale.renderListofLocations()
         document.getElementById('city').value = ""
     }
 
@@ -65,9 +83,9 @@ class Location{
                 newLocale.locationData.filter(location => { 
                     return clickedLocationID === location.id
             })
-            let newCard = new TrailModal(targetLocation[0])
+            newCard = new TrailModal(targetLocation[0]) // new Modal Class for City
             newCard.initialize()
-            newLocale.modalDisplay.style.display = 'inline'
+            newLocale.modalDisplay.style.display = 'inline' //modal is no longer hidden
           })
         })
     
@@ -75,7 +93,7 @@ class Location{
       }
     
       initialize() {
-        this.fetchLocations();
+        newLocale.fetchLocations();
         // this.renderListofLocations();
         // this.addListeners();
       }
@@ -83,5 +101,5 @@ class Location{
 
 
 const newLocale = new Location()
-newLocale.initialize()
-console.log(newLocale)
+document.addEventListener("DOMContentLoaded", newLocale.initialize)
+let newCard;
