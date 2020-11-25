@@ -110,5 +110,5 @@ class Location{
 
 
 const newLocale = new Location()
-document.addEventListener("DOMContentLoaded", newLocale.initialize)
+document.addEventListener("DOMContentLoaded", newLocale.initialize) //don't need DOMContentLoaded b/c you have src files listed on the bottom of your HTML, HTML is read from top to bottom, so top will have exceuted anyway
 let newCard;
