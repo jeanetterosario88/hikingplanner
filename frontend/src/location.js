@@ -37,7 +37,7 @@ class Location{
                 errordiv.innerHTML = res.errors[0]
                 }
             else {
-                this.fetchLocations()
+                this.fetchLocations() //maybe no fetch, can just render new location onto DOM
                 console.log("New City Added")
             }
          })
@@ -56,6 +56,13 @@ class Location{
         })
     }
 
+    searchCities(){
+            let searchedcity = document.getElementById("citysear").value
+            let searchcityreturn = this.locationData.filter(locale => locale.city === searchedcity)
+            document.getElementById(`locationsContainer`).innerHTML = ""
+            document.getElementById(`locationsContainer`).innerHTML += this.renderLocation(searchcityreturn[0])
+    }
+
     sortCities() {
         const cityList = newLocale.locationData; // this.LocationData not working, using newLocale.LocationData, newLocale is the Location Class that was initialized, not a specific city
         const sortedCityList = cityList.sort((a,b) => {
@@ -69,7 +76,7 @@ class Location{
     }
 
     submitNewLocation(event){
-        event.preventDefault()
+        event.preventDefault() //actually don't need this, cause it's a click, not a submit event, dont need to "prevent" submit event default
         let newlocation = {city: document.getElementById('city').value}
         newLocale.addLocation(newlocation)
         document.getElementById('city').value = ""
@@ -88,7 +95,9 @@ class Location{
             newLocale.modalDisplay.style.display = 'inline' //modal is no longer hidden
           })
         })
-    
+
+        document.getElementById("citySearch").addEventListener('click', this.searchCities.bind(this))
+        console.log(document.getElementById("citySearch"))
         this.submitNewLocationButton.addEventListener('click', this.submitNewLocation)
       }
     
