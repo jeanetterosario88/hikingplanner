@@ -54,14 +54,14 @@
     display: block;
     margin: 1rem;
 }
-
+/* 
 .shortdescription{
     display: inline
 }
 
 .fulldescription{
     display: none
-}
+} */
 
 #closeModal{
     float: right;

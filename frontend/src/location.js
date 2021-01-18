@@ -96,7 +96,7 @@ class Location{
           })
         })
 
-        document.getElementById("citySearch").addEventListener('click', this.searchCities.bind(this))
+        document.getElementById("citySearch").addEventListener('click', this.searchCities.bind(this)) //.bind is binding the meaning of this in this context, when this function gets run in the code above, it will retain the meaning of this, 
         console.log(document.getElementById("citySearch"))
         this.submitNewLocationButton.addEventListener('click', this.submitNewLocation)
       }
